@@ -48,23 +48,36 @@ def weight_of_individual(individual, item_set):
 		if (individual[i]):
 			weight += item_set[i][0]
 	return weight
+	
+def value_of_individual(individual, item_set):
+	value = 0
+	for i in range(len(individual)):
+		if (individual[i]):
+			value += item_set[i][1]
+	return value
+
+def fitness(individual, item_set, Knapsack_Capacity):
+	result = 0
+	if (weight_of_individual(individual, item_set) <= Knapsack_Capacity):
+		result = value_of_individual(individual, item_set)
+	return result 
 
 #print result:
 
 #variables
 Knapsack_Capacity = 50 #equals item_set_total_weight / 2
-Number_of_item = 5
-Max_value = 100
+Number_of_item = 20
+Max_value = 10
 Max_weight = 10
 size_of_population = 100
 
 #main
 item_set = generate_all_items(Number_of_item, Max_weight, Max_value)
 print(item_set)
-population = generate_first_population(item_set, size_of_population)
+#population = generate_first_population(item_set, size_of_population)
 individual = generate_one_individual(item_set)
 print(individual)
-print(weight_of_individual(individual, item_set))
+print ("fitness " + str(fitness(individual, item_set, Knapsack_Capacity)))
 
 #analysis tools
 def compute_average_total_weight(size_sample, Number_of_item, Max_weight, Max_value):
