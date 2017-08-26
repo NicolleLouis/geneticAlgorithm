@@ -9,13 +9,39 @@ import matplotlib.pyplot as plt
 temps1 = time.time()
 
 #genetic algorithm function
+def generate_one_item(Max_weight, Max_value):
+	item = []
+	item.append(round(Max_weight * random.random()))
+	item.append(round(Max_value * random.random()))
+	return item
+	
+def generate_all_items(Number_of_item, Max_weight, Max_value):
+	list_item = []
+	for i in range(Number_of_item):
+		list_item.append(generate_one_item(Max_weight, Max_value))
+	return list_item
 
 #print result:
 
 #analysis tools
+def total_weight_of_item_set(item_set):
+	total_weight = 0
+	for item in item_set:
+		total_weight += item[0]
+	return total_weight
 
 #variables
+Knapsack_Capacity = 100
+Number_of_item = 20
+Max_value = 100
+Max_weight = 10
 
-#program
-
+#main
+average_total_weight = 0
+for i in range (100):
+	item_set = generate_all_items(Number_of_item, Max_weight, Max_value)
+	total_weight = total_weight_of_item_set(item_set)
+	average_total_weight += total_weight
+average_total_weight/=100
+print average_total_weight
 print time.time() - temps1
