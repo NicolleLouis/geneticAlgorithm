@@ -21,27 +21,49 @@ def generate_all_items(Number_of_item, Max_weight, Max_value):
 		list_item.append(generate_one_item(Max_weight, Max_value))
 	return list_item
 
-#print result:
-
-#analysis tools
 def total_weight_of_item_set(item_set):
 	total_weight = 0
 	for item in item_set:
 		total_weight += item[0]
 	return total_weight
 
+def generate_one_individual(item_set):
+	individual = []
+	for i in range (len(item_set)):
+		if (100 * random.random() < 50):
+			individual.append(True)
+		else:
+			individual.append(False)
+	return individual
+
+def generate_first_population(item_set, size_of_population):
+	population = []
+	for i in range(size_of_population):
+		population.append(generate_one_individual(item_set))
+	return population
+
+#print result:
+
 #variables
-Knapsack_Capacity = 100
+Knapsack_Capacity = 50 #equals item_set_total_weight / 2
 Number_of_item = 20
 Max_value = 100
 Max_weight = 10
+size_of_population = 100
 
 #main
-average_total_weight = 0
-for i in range (100):
-	item_set = generate_all_items(Number_of_item, Max_weight, Max_value)
-	total_weight = total_weight_of_item_set(item_set)
-	average_total_weight += total_weight
-average_total_weight/=100
-print average_total_weight
+item_set = generate_all_items(Number_of_item, Max_weight, Max_value)
+print(generate_first_population(item_set, size_of_population))
+
+#analysis tools
+def compute_average_total_weight(size_sample, Number_of_item, Max_weight, Max_value):
+	average_total_weight = 0
+	for i in range (size_sample):
+		item_set = generate_all_items(Number_of_item, Max_weight, Max_value)
+		total_weight = total_weight_of_item_set(item_set)
+		average_total_weight += total_weight
+	print(average_total_weight/size_sample)
+#compute_average_total_weight(100, Number_of_item, Max_weight, Max_value)
+
 print time.time() - temps1
+
