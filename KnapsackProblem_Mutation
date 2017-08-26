@@ -1,0 +1,21 @@
+#!/usr/bin/python3.5
+# -*-coding:Utf-8 -*
+
+import random
+import operator
+import time
+import matplotlib.pyplot as plt
+
+temps1 = time.time()
+
+#genetic algorithm function
+
+#print result:
+
+#analysis tools
+
+#variables
+
+#program
+
+print time.time() - temps1
