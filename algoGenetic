@@ -56,17 +56,13 @@ def selectFromPopulation(populationSorted, best_sample, lucky_few):
 	return nextGeneration
 
 def createChild(individual1, individual2):
-	if (len(individual1) != len(individual2)):
-		print "male and female de taille incompatible"
-		return
-	else:
-		child = ""
-		for i in range(len(individual1)):
-			if (int(100 * random.random()) < 50):
-				child += individual1[i]
-			else:
-				child += individual2[i]
-		return child
+	child = ""
+	for i in range(len(individual1)):
+		if (int(100 * random.random()) < 50):
+			child += individual1[i]
+		else:
+			child += individual2[i]
+	return child
 
 def createChildren(breeders, number_of_child):
 	nextPopulation = []
@@ -103,7 +99,7 @@ def multipleGeneration(number_of_generation, password, size_population, best_sam
 		historique.append(nextGeneration(historique[i], password, best_sample, lucky_few, number_of_child, chance_of_mutation))
 	return historique
 
-#print result sous différentes formes:
+#print result:
 def printSimpleResult(historique, password, number_of_generation): #bestSolution in historique. Caution not the last
 	result = getListBestIndividualFromHistorique(historique, password)[number_of_generation-1]
 	print "solution: \"" + result[0] + "\" de fitness: " + str(result[1])
@@ -148,7 +144,7 @@ def evolutionAverageFitness(historique, password, size_population):
 	plt.show()
 
 #variables
-password = "jetaimececile"
+password = "banana"
 size_population = 100
 best_sample = 20
 lucky_few = 20
@@ -158,7 +154,7 @@ chance_of_mutation = 5
 
 #programme
 if ((best_sample + lucky_few) / 2 * number_of_child != size_population):
-	print "population instable"
+	print "population size not stable"
 else:
 	historique = multipleGeneration(number_of_generation, password, size_population, best_sample, lucky_few, number_of_child, chance_of_mutation)
 	
