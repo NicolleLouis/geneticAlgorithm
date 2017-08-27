@@ -112,6 +112,11 @@ def create_children(breeders, number_of_child):
 			result.append(create_child(breeders[i], breeders[len(breeders) - 1 -i]))
 	return result
 
+def evolve_one_generation(population, item_set, best_individuals, lucky_few, number_of_child):
+	population_sorted = sort_population_by_fitness(population, item_set)
+	breeders = select_breeders(population_sorted, item_set, best_individuals, lucky_few)
+	return create_children(breeders, number_of_child)
+
 #print result:
 
 #variables
@@ -128,11 +133,8 @@ number_of_child = 5
 #main
 item_set = generate_all_items(Number_of_item, Max_weight, Max_value)
 population = generate_first_population(item_set, size_of_population)
-population_sorted = sort_population_by_fitness(population, item_set)
-breeders = select_breeders(population_sorted, item_set, best_individuals, lucky_few)
-next_generation = create_children(breeders, number_of_child)
+next_generation = evolve_one_generation(population, item_set, best_individuals, lucky_few, number_of_child)
 print next_generation
-
 
 #analysis tools
 def compute_average_total_weight(size_sample, Number_of_item, Max_weight, Max_value):
