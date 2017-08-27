@@ -117,7 +117,29 @@ def evolve_one_generation(population, item_set, best_individuals, lucky_few, num
 	breeders = select_breeders(population_sorted, item_set, best_individuals, lucky_few)
 	return create_children(breeders, number_of_child)
 
+#analysis tools
+def compute_average_total_weight(size_sample, Number_of_item, Max_weight, Max_value):
+	average_total_weight = 0
+	for i in range (size_sample):
+		item_set = generate_all_items(Number_of_item, Max_weight, Max_value)
+		total_weight = total_weight_of_item_set(item_set)
+		average_total_weight += total_weight
+	print(average_total_weight/size_sample)
+#size_sample = 100
+#compute_average_total_weight(size_sample, Number_of_item, Max_weight, Max_value)
+
+def get_best_individual_in_population(population, item_set):
+	return generate_individual_from_string(sort_population_by_fitness(population, item_set)[0][0])
+
+def get_Knapsack_capacity(item_set):
+	return round(total_weight_of_item_set(item_set) / 2)
+
 #print result:
+def print_individual_fitness_and_weight(individual, item_set):
+	print "individual: " + to_string_individual(individual) + " of fitness: " + str(fitness(individual, item_set)) + " and weight: " + str(weight_of_individual(individual, item_set))
+
+def print_Knapasack_capacity(item_set):
+	print "Knapsack capacity is: " + str(get_Knapsack_capacity(item_set))
 
 #variables
 #Knapsack_Capacity = item_set_total_weight / 2
@@ -134,17 +156,9 @@ number_of_child = 5
 item_set = generate_all_items(Number_of_item, Max_weight, Max_value)
 population = generate_first_population(item_set, size_of_population)
 next_generation = evolve_one_generation(population, item_set, best_individuals, lucky_few, number_of_child)
-print next_generation
 
-#analysis tools
-def compute_average_total_weight(size_sample, Number_of_item, Max_weight, Max_value):
-	average_total_weight = 0
-	for i in range (size_sample):
-		item_set = generate_all_items(Number_of_item, Max_weight, Max_value)
-		total_weight = total_weight_of_item_set(item_set)
-		average_total_weight += total_weight
-	print(average_total_weight/size_sample)
-#size_sample = 100
-#compute_average_total_weight(size_sample, Number_of_item, Max_weight, Max_value)
+print_Knapasack_capacity(item_set)
+print_individual_fitness_and_weight(get_best_individual_in_population(population, item_set), item_set)
+print_individual_fitness_and_weight(get_best_individual_in_population(next_generation, item_set), item_set)
 
 print time.time() - temps1
