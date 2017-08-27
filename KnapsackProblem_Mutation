@@ -96,6 +96,15 @@ def select_breeders(population_sorted, item_set, best_individuals, lucky_few):
 	random.shuffle(result)
 	return result
 
+def create_child(individual1, individual2):
+	result = []
+	for i in range(len(individual1)):
+		if (100 * random.random() < 50):
+			result.append(individual1[i])
+		else:
+			result.append(individual2[i])
+	return result
+
 #print result:
 
 #variables
@@ -112,7 +121,12 @@ lucky_few = 20
 item_set = generate_all_items(Number_of_item, Max_weight, Max_value)
 population = generate_first_population(item_set, size_of_population)
 population_sorted = sort_population_by_fitness(population, item_set)
-print select_breeders(population_sorted, item_set, best_individuals, lucky_few)
+breeders = select_breeders(population_sorted, item_set, best_individuals, lucky_few)
+individual1 = generate_one_individual(item_set)
+print to_string_individual(individual1)
+individual2 = generate_one_individual(item_set)
+print to_string_individual(individual2)
+print to_string_individual(create_child(individual1, individual2))
 
 #analysis tools
 def compute_average_total_weight(size_sample, Number_of_item, Max_weight, Max_value):
