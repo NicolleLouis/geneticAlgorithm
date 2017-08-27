@@ -117,6 +117,13 @@ def evolve_one_generation(population, item_set, best_individuals, lucky_few, num
 	breeders = select_breeders(population_sorted, item_set, best_individuals, lucky_few)
 	return create_children(breeders, number_of_child)
 
+def evolve_several_generation(population, item_set, best_individuals, lucky_few, number_of_child, number_of_generation):
+	result = []
+	result.append(population)
+	for i in range(number_of_generation):
+		result.append(evolve_one_generation(population, item_set, best_individuals, lucky_few, number_of_child))
+	return result
+
 #analysis tools
 def compute_average_total_weight(size_sample, Number_of_item, Max_weight, Max_value):
 	average_total_weight = 0
@@ -151,14 +158,15 @@ size_of_population = 100
 best_individuals = 20
 lucky_few = 20
 number_of_child = 5
+number_of_generation = 10
 
 #main
 item_set = generate_all_items(Number_of_item, Max_weight, Max_value)
-population = generate_first_population(item_set, size_of_population)
-next_generation = evolve_one_generation(population, item_set, best_individuals, lucky_few, number_of_child)
+first_population = generate_first_population(item_set, size_of_population)
+historic = evolve_several_generation(first_population, item_set, best_individuals, lucky_few, number_of_child, number_of_generation)
 
 print_Knapasack_capacity(item_set)
-print_individual_fitness_and_weight(get_best_individual_in_population(population, item_set), item_set)
-print_individual_fitness_and_weight(get_best_individual_in_population(next_generation, item_set), item_set)
+for generation in historic:
+	print_individual_fitness_and_weight(get_best_individual_in_population(generation, item_set), item_set)
 
 print time.time() - temps1
