@@ -105,6 +105,13 @@ def create_child(individual1, individual2):
 			result.append(individual2[i])
 	return result
 
+def create_children(breeders, number_of_child):
+	result = []
+	for i in range(len(breeders) / 2):
+		for j in range(number_of_child):
+			result.append(create_child(breeders[i], breeders[len(breeders) - 1 -i]))
+	return result
+
 #print result:
 
 #variables
@@ -116,17 +123,16 @@ Max_weight = 10
 size_of_population = 100
 best_individuals = 20
 lucky_few = 20
+number_of_child = 5
 
 #main
 item_set = generate_all_items(Number_of_item, Max_weight, Max_value)
 population = generate_first_population(item_set, size_of_population)
 population_sorted = sort_population_by_fitness(population, item_set)
 breeders = select_breeders(population_sorted, item_set, best_individuals, lucky_few)
-individual1 = generate_one_individual(item_set)
-print to_string_individual(individual1)
-individual2 = generate_one_individual(item_set)
-print to_string_individual(individual2)
-print to_string_individual(create_child(individual1, individual2))
+next_generation = create_children(breeders, number_of_child)
+print next_generation
+
 
 #analysis tools
 def compute_average_total_weight(size_sample, Number_of_item, Max_weight, Max_value):
