@@ -87,6 +87,15 @@ def sort_population_by_fitness(population, item_set):
 		population_sorted[to_string_individual(individual)] = fitness(individual, item_set)
 	return sorted(population_sorted.items(), key = operator.itemgetter(1), reverse = True)
 
+def select_breeders(population_sorted, item_set, best_individuals, lucky_few):
+	result = []
+	for i in range(best_individuals):
+		result.append(generate_individual_from_string(population_sorted[i][0]))
+	for i in range(lucky_few):
+		result.append(generate_individual_from_string(random.choice(population_sorted)[0]))
+	random.shuffle(result)
+	return result
+
 #print result:
 
 #variables
@@ -94,12 +103,16 @@ def sort_population_by_fitness(population, item_set):
 Number_of_item = 20
 Max_value = 10
 Max_weight = 10
+
 size_of_population = 100
+best_individuals = 20
+lucky_few = 20
 
 #main
 item_set = generate_all_items(Number_of_item, Max_weight, Max_value)
 population = generate_first_population(item_set, size_of_population)
-print sort_population_by_fitness(population, item_set)
+population_sorted = sort_population_by_fitness(population, item_set)
+print select_breeders(population_sorted, item_set, best_individuals, lucky_few)
 
 #analysis tools
 def compute_average_total_weight(size_sample, Number_of_item, Max_weight, Max_value):
