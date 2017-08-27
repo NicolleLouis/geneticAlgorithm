@@ -36,6 +36,24 @@ def generate_one_individual(item_set):
 			individual.append(False)
 	return individual
 
+def to_string_individual(individual):
+	result = ""
+	for boolean in individual:
+		if (boolean):
+			result += "T"
+		else:
+			result += "F"
+	return result
+
+def generate_individual_from_string(string_individual):
+	result = []
+	for letter in string_individual:
+		if letter == 'F':
+			result.append(False)
+		else:
+			result.append(True)
+	return result
+
 def generate_first_population(item_set, size_of_population):
 	population = []
 	for i in range(size_of_population):
@@ -56,16 +74,23 @@ def value_of_individual(individual, item_set):
 			value += item_set[i][1]
 	return value
 
-def fitness(individual, item_set, Knapsack_Capacity):
+def fitness(individual, item_set):
+	Knapsack_Capacity = round(total_weight_of_item_set(item_set) / 2)
 	result = 0
 	if (weight_of_individual(individual, item_set) <= Knapsack_Capacity):
 		result = value_of_individual(individual, item_set)
 	return result 
 
+def sort_population_by_fitness(population, item_set):
+	population_sorted = {}
+	for individual in population:
+		population_sorted[to_string_individual(individual)] = fitness(individual, item_set)
+	return sorted(population_sorted.items(), key = operator.itemgetter(1), reverse = True)
+
 #print result:
 
 #variables
-Knapsack_Capacity = 50 #equals item_set_total_weight / 2
+#Knapsack_Capacity = item_set_total_weight / 2
 Number_of_item = 20
 Max_value = 10
 Max_weight = 10
@@ -73,11 +98,8 @@ size_of_population = 100
 
 #main
 item_set = generate_all_items(Number_of_item, Max_weight, Max_value)
-print(item_set)
-#population = generate_first_population(item_set, size_of_population)
-individual = generate_one_individual(item_set)
-print(individual)
-print ("fitness " + str(fitness(individual, item_set, Knapsack_Capacity)))
+population = generate_first_population(item_set, size_of_population)
+print sort_population_by_fitness(population, item_set)
 
 #analysis tools
 def compute_average_total_weight(size_sample, Number_of_item, Max_weight, Max_value):
@@ -87,6 +109,7 @@ def compute_average_total_weight(size_sample, Number_of_item, Max_weight, Max_va
 		total_weight = total_weight_of_item_set(item_set)
 		average_total_weight += total_weight
 	print(average_total_weight/size_sample)
-#compute_average_total_weight(100, Number_of_item, Max_weight, Max_value)
+#size_sample = 100
+#compute_average_total_weight(size_sample, Number_of_item, Max_weight, Max_value)
 
 print time.time() - temps1
