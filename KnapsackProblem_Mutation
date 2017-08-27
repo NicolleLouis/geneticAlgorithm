@@ -159,10 +159,23 @@ def print_Knapasack_capacity(item_set):
 	print "Knapsack capacity is: " + str(get_Knapsack_capacity(item_set))
 
 def graph_evolution_value_best_individual_of_generation_with_time(historic, item_set):
-	plt.title("Value of Knapsack")
+	plt.title("Value of best individual in generation")
 	graph = []
 	for generation in historic:
 		graph.append(fitness(get_best_individual_in_population(generation, item_set), item_set))
+	plt.plot(graph)
+	plt.ylabel("Value")
+	plt.xlabel("Generation")
+	plt.show()
+
+def graph_evolution_value_best_individual_since_beginning_with_time(historic, item_set):
+	plt.title("Value of best individual since beginning")
+	graph = []
+	best_fitness = 0
+	for generation in historic:
+		if fitness(get_best_individual_in_population(generation, item_set), item_set) > best_fitness:
+			best_fitness = fitness(get_best_individual_in_population(generation, item_set), item_set)
+		graph.append(best_fitness)
 	plt.plot(graph)
 	plt.ylabel("Value")
 	plt.xlabel("Generation")
@@ -194,7 +207,9 @@ item_set = generate_all_items(Number_of_item, Max_weight, Max_value)
 first_population = generate_first_population(item_set, size_of_population)
 historic = evolve_several_generation(first_population, item_set, best_individuals, lucky_few, number_of_child, number_of_generation)
 
-graph_evolution_value_best_individual_of_generation_with_time(historic, item_set)
+#graph_evolution_value_best_individual_of_generation_with_time(historic, item_set)
+#graph_evolution_value_best_individual_since_beginning_with_time(historic, item_set)
+print_Knapasack_capacity(item_set)
 print_best_solution_in_historic(historic, item_set)
 
 print time.time() - temps1
