@@ -75,12 +75,19 @@ def value_of_individual(individual, item_set):
 			value += item_set[i][1]
 	return value
 
-def fitness(individual, item_set):
+def value(individual, item_set):
 	Knapsack_Capacity = round(total_weight_of_item_set(item_set) / 2)
 	result = 0
 	if (weight_of_individual(individual, item_set) <= Knapsack_Capacity):
 		result = value_of_individual(individual, item_set)
 	return result 
+
+def fitness(individual, item_set):
+	Knapsack_Capacity = round(total_weight_of_item_set(item_set) / 2)
+	result = 0
+	if (weight_of_individual(individual, item_set) <= Knapsack_Capacity):
+		result = value_of_individual(individual, item_set) - weight_of_individual(individual, item_set)
+	return result
 
 def sort_population_by_fitness(population, item_set):
 	population_sorted = {}
@@ -88,8 +95,10 @@ def sort_population_by_fitness(population, item_set):
 		population_sorted[to_string_individual(individual)] = fitness(individual, item_set)
 	return sorted(population_sorted.items(), key = operator.itemgetter(1), reverse = True)
 
-def select_breeders(population_sorted, item_set, best_individuals, lucky_few):
+def select_breeders(population_sorted, item_set, size_of_population):
 	result = []
+	best_individuals = size_of_population/5
+	lucky_few = size_of_population/5
 	for i in range(best_individuals):
 		result.append(generate_individual_from_string(population_sorted[i][0]))
 	for i in range(lucky_few):
@@ -112,152 +121,67 @@ def create_children(breeders, number_of_child):
 		for j in range(number_of_child):
 			result.append(create_child(breeders[i], breeders[len(breeders) - 1 -i]))
 	return result
-
-def evolve_one_generation(population, item_set, best_individuals, lucky_few, number_of_child):
-	population_sorted = sort_population_by_fitness(population, item_set)
-	breeders = select_breeders(population_sorted, item_set, best_individuals, lucky_few)
-	return create_children(breeders, number_of_child)
-
-def evolve_several_generation(population, item_set, best_individuals, lucky_few, number_of_child, number_of_generation):
+	
+def evolve_several_generation_with_limited_time(item_set, size_of_population, number_of_child, time_limit):
+	temps_init = time.time()
+	value0 = 0
 	result = []
-	result.append(population)
-	for i in range(number_of_generation):
-		result.append(evolve_one_generation(population, item_set, best_individuals, lucky_few, number_of_child))
+	population = generate_first_population(item_set, size_of_population)
+	value0 = max(value0, value(get_best_individual_in_population(population, item_set),item_set))
+	result.append(value0)
+	while(time.time()-temps_init < time_limit):
+		population_sorted = sort_population_by_fitness(population, item_set)
+		breeders = select_breeders(population_sorted, item_set, size_of_population)
+		population = create_children(breeders, number_of_child)
+		value0 = max(value0, value(get_best_individual_in_population(population, item_set),item_set))
+		result.append(value0)
 	return result
 
 #analysis tools
-def compute_average_total_weight(size_sample, Number_of_item, Max_weight, Max_value):
-	average_total_weight = 0
-	for i in range (size_sample):
-		item_set = generate_all_items(Number_of_item, Max_weight, Max_value)
-		total_weight = total_weight_of_item_set(item_set)
-		average_total_weight += total_weight
-	print(average_total_weight/size_sample)
-#size_sample = 100
-#compute_average_total_weight(size_sample, Number_of_item, Max_weight, Max_value)
-
 def get_best_individual_in_population(population, item_set):
 	return generate_individual_from_string(sort_population_by_fitness(population, item_set)[0][0])
 
-def get_Knapsack_capacity(item_set):
-	return round(total_weight_of_item_set(item_set) / 2)
-
-def get_best_individual_in_historic(historic, item_set):
-	result = []
-	fitness_result = -1;
-	for generation in historic:
-		best_in_generation = get_best_individual_in_population(generation, item_set)
-		if (fitness(best_in_generation, item_set) > fitness_result):
-			result = best_in_generation
-			fitness_result = fitness(result, item_set)
-	return result
-
 #print result:
-def print_individual_fitness_and_weight(individual, item_set):
-	print "individual: " + to_string_individual(individual) + " of fitness: " + str(fitness(individual, item_set)) + " and weight: " + str(weight_of_individual(individual, item_set))
+def mean_result_evolve(item_set, size_of_population, number_of_child, number_of_sample, mutationRate, time_limit):
+	meanResult = 0
+	for i in range (number_of_sample):
+		temp = evolve_several_generation_with_limited_time(item_set, size_of_population, number_of_child, time_limit)
+		meanResult += temp[len(temp) - 1]
+	return (meanResult/number_of_sample)
 
-def print_Knapasack_capacity(item_set):
-	print "Knapsack capacity is: " + str(get_Knapsack_capacity(item_set))
-
-def graph_evolution_value_best_individual_of_generation_with_time(historic, item_set):
-	plt.title("Value of best individual in generation")
-	graph = []
-	for generation in historic:
-		graph.append(fitness(get_best_individual_in_population(generation, item_set), item_set))
-	#plt.plot(graph)
-	#plt.ylabel("Value")
-	#plt.xlabel("Generation")
-	#plt.show()
-	return graph
-
-def graph_evolution_value_best_individual_since_beginning_with_time(historic, item_set):
-	plt.title("Value of best individual since beginning")
-	graph = []
-	best_fitness = 0
-	for generation in historic:
-		if fitness(get_best_individual_in_population(generation, item_set), item_set) > best_fitness:
-			best_fitness = fitness(get_best_individual_in_population(generation, item_set), item_set)
-		graph.append(best_fitness)
-	#plt.plot(graph)
-	#plt.ylabel("Value")
-	#plt.xlabel("Generation")
-	#plt.show()
-	return graph
-
-def print_evolution(historic, item_set):
-	print_Knapasack_capacity(item_set)
-	for generation in historic:
-		print_individual_fitness_and_weight(get_best_individual_in_population(generation, item_set), item_set)
-
-def print_best_solution_in_historic(historic, item_set):
-	print "best individual in historic: "
-	print_individual_fitness_and_weight(get_best_individual_in_historic(historic, item_set), item_set)
-	
-def print_scientific_graph(Number_of_item, Max_weight, Max_value, size_of_population, lucky_few, number_of_child, number_of_generation, number_of_sample, mutationRate):
+def print_graph_size_of_population(Number_of_item, Max_weight, Max_value, number_of_child, number_of_sample, mutationRate, time_limit):
 	item_set = generate_all_items(Number_of_item, Max_weight, Max_value)
-	allGraph = []
-	for i in range (100):
-		first_population = generate_first_population(item_set, size_of_population)
-		historic = evolve_several_generation(first_population, item_set, best_individuals, lucky_few, number_of_child, number_of_generation)
-		allGraph.append(graph_evolution_value_best_individual_of_generation_with_time(historic, item_set))
-
-	graphAverage = []
-	for i in range(number_of_generation):
-		sum = 0
-		for j in range(100):
-			sum += allGraph[j][i]
-		graphAverage.append(sum/100)
-
-	plt.title("average fitness")	
+	plt.title("size_of_population")
+	graph = []
+	for i in range(19):
+		size_of_population = 5*(i+1)
+		graph.append(mean_result_evolve(item_set, size_of_population, number_of_child, number_of_sample, mutationRate, time_limit))
 	plt.plot(graph)
-	plt.ylabel("Value")
-	plt.xlabel("Generation")
 	plt.show()
-
 
 #variables
 #Knapsack_Capacity = item_set_total_weight / 2
-Number_of_item = 1000
+Number_of_item = 10
 Max_value = 10
 Max_weight = 10
 
-size_of_population = 100
-best_individuals = size_of_population/5
-lucky_few = best_individuals
+size_of_population = 5 * 3
 number_of_child = 5
-number_of_generation = 10
-number_of_sample = 100
+mutationRate = 0
+time_limit = 0.01
+number_of_sample = 10
 
 #main
-item_set = generate_all_items(Number_of_item, Max_weight, Max_value)
-allGraph = []
-for i in range (number_of_sample):
-	first_population = generate_first_population(item_set, size_of_population)
-	historic = evolve_several_generation(first_population, item_set, best_individuals, lucky_few, number_of_child, number_of_generation)
-	allGraph.append(graph_evolution_value_best_individual_of_generation_with_time(historic, item_set))
+print_graph_size_of_population(Number_of_item, Max_weight, Max_value, number_of_child, number_of_sample, mutationRate, time_limit)
 
-graphAverage = []
-graphTopTiers = []
-graphLowTiers = []
-for i in range(number_of_generation):
-	array = []
-	for j in range(number_of_sample):
-		array.append(allGraph[j][i])
-	array.sort()
-	graphAverage.append(np.average(array))
-	graphTopTiers.append(array[5])
-	graphLowTiers.append(array[number_of_sample - 5])	
+def test3():
+	item_set = generate_all_items(Number_of_item, Max_weight, Max_value)
+	mean_result_evolve(item_set, size_of_population, lucky_few, number_of_child, number_of_sample, mutationRate, time_limit)
 
-plt.plot(graphAverage)
-plt.plot(graphTopTiers)
-plt.plot(graphLowTiers)
-plt.show()
+def test2():
+	item_set = generate_all_items(Number_of_item, Max_weight, Max_value)
+	result = evolve_several_generation_with_limited_time(item_set, size_of_population, best_individuals, lucky_few, number_of_child, time_limit)
+	plt.plot(result)
+	plt.show()
 
-
-
-#graph_evolution_value_best_individual_of_generation_with_time(historic, item_set)
-#graph_evolution_value_best_individual_since_beginning_with_time(historic, item_set)
-#print_Knapasack_capacity(item_set)
-#print_best_solution_in_historic(historic, item_set)
-
-print time.time() - temps1
+print (time.time() - temps1)
