@@ -5,6 +5,7 @@ import random
 import operator
 import time
 import matplotlib.pyplot as plt
+import numpy as np
 
 temps1 = time.time()
 
@@ -163,10 +164,11 @@ def graph_evolution_value_best_individual_of_generation_with_time(historic, item
 	graph = []
 	for generation in historic:
 		graph.append(fitness(get_best_individual_in_population(generation, item_set), item_set))
-	plt.plot(graph)
-	plt.ylabel("Value")
-	plt.xlabel("Generation")
-	plt.show()
+	#plt.plot(graph)
+	#plt.ylabel("Value")
+	#plt.xlabel("Generation")
+	#plt.show()
+	return graph
 
 def graph_evolution_value_best_individual_since_beginning_with_time(historic, item_set):
 	plt.title("Value of best individual since beginning")
@@ -176,10 +178,11 @@ def graph_evolution_value_best_individual_since_beginning_with_time(historic, it
 		if fitness(get_best_individual_in_population(generation, item_set), item_set) > best_fitness:
 			best_fitness = fitness(get_best_individual_in_population(generation, item_set), item_set)
 		graph.append(best_fitness)
-	plt.plot(graph)
-	plt.ylabel("Value")
-	plt.xlabel("Generation")
-	plt.show()
+	#plt.plot(graph)
+	#plt.ylabel("Value")
+	#plt.xlabel("Generation")
+	#plt.show()
+	return graph
 
 def print_evolution(historic, item_set):
 	print_Knapasack_capacity(item_set)
@@ -189,27 +192,72 @@ def print_evolution(historic, item_set):
 def print_best_solution_in_historic(historic, item_set):
 	print "best individual in historic: "
 	print_individual_fitness_and_weight(get_best_individual_in_historic(historic, item_set), item_set)
+	
+def print_scientific_graph(Number_of_item, Max_weight, Max_value, size_of_population, lucky_few, number_of_child, number_of_generation, number_of_sample, mutationRate):
+	item_set = generate_all_items(Number_of_item, Max_weight, Max_value)
+	allGraph = []
+	for i in range (100):
+		first_population = generate_first_population(item_set, size_of_population)
+		historic = evolve_several_generation(first_population, item_set, best_individuals, lucky_few, number_of_child, number_of_generation)
+		allGraph.append(graph_evolution_value_best_individual_of_generation_with_time(historic, item_set))
+
+	graphAverage = []
+	for i in range(number_of_generation):
+		sum = 0
+		for j in range(100):
+			sum += allGraph[j][i]
+		graphAverage.append(sum/100)
+
+	plt.title("average fitness")	
+	plt.plot(graph)
+	plt.ylabel("Value")
+	plt.xlabel("Generation")
+	plt.show()
+
 
 #variables
 #Knapsack_Capacity = item_set_total_weight / 2
-Number_of_item = 20
+Number_of_item = 1000
 Max_value = 10
 Max_weight = 10
 
 size_of_population = 100
-best_individuals = 20
-lucky_few = 20
+best_individuals = size_of_population/5
+lucky_few = best_individuals
 number_of_child = 5
-number_of_generation = 50
+number_of_generation = 10
+number_of_sample = 100
 
 #main
 item_set = generate_all_items(Number_of_item, Max_weight, Max_value)
-first_population = generate_first_population(item_set, size_of_population)
-historic = evolve_several_generation(first_population, item_set, best_individuals, lucky_few, number_of_child, number_of_generation)
+allGraph = []
+for i in range (number_of_sample):
+	first_population = generate_first_population(item_set, size_of_population)
+	historic = evolve_several_generation(first_population, item_set, best_individuals, lucky_few, number_of_child, number_of_generation)
+	allGraph.append(graph_evolution_value_best_individual_of_generation_with_time(historic, item_set))
+
+graphAverage = []
+graphTopTiers = []
+graphLowTiers = []
+for i in range(number_of_generation):
+	array = []
+	for j in range(number_of_sample):
+		array.append(allGraph[j][i])
+	array.sort()
+	graphAverage.append(np.average(array))
+	graphTopTiers.append(array[5])
+	graphLowTiers.append(array[number_of_sample - 5])	
+
+plt.plot(graphAverage)
+plt.plot(graphTopTiers)
+plt.plot(graphLowTiers)
+plt.show()
+
+
 
 #graph_evolution_value_best_individual_of_generation_with_time(historic, item_set)
 #graph_evolution_value_best_individual_since_beginning_with_time(historic, item_set)
-print_Knapasack_capacity(item_set)
-print_best_solution_in_historic(historic, item_set)
+#print_Knapasack_capacity(item_set)
+#print_best_solution_in_historic(historic, item_set)
 
 print time.time() - temps1
