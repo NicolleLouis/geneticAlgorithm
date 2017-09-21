@@ -6,6 +6,7 @@ import operator
 import time
 import matplotlib.pyplot as plt
 import numpy as np
+import functools
 
 temps1 = time.time()
 
@@ -36,24 +37,6 @@ def generate_one_individual(item_set):
 		else:
 			individual.append(False)
 	return individual
-
-def to_string_individual(individual):
-	result = ""
-	for boolean in individual:
-		if (boolean):
-			result += "T"
-		else:
-			result += "F"
-	return result
-
-def generate_individual_from_string(string_individual):
-	result = []
-	for letter in string_individual:
-		if letter == 'F':
-			result.append(False)
-		else:
-			result.append(True)
-	return result
 
 def generate_first_population(item_set, size_of_population):
 	population = []
@@ -86,23 +69,24 @@ def fitness(individual, item_set):
 	Knapsack_Capacity = round(total_weight_of_item_set(item_set) / 2)
 	result = 0
 	if (weight_of_individual(individual, item_set) <= Knapsack_Capacity):
-		result = value_of_individual(individual, item_set) - weight_of_individual(individual, item_set)
+		result = 2 * value_of_individual(individual, item_set) - weight_of_individual(individual, item_set)
 	return result
 
-def sort_population_by_fitness(population, item_set):
-	population_sorted = {}
-	for individual in population:
-		population_sorted[to_string_individual(individual)] = fitness(individual, item_set)
-	return sorted(population_sorted.items(), key = operator.itemgetter(1), reverse = True)
+def compare(individual1, individual2):
+	return fitness(individual2, item_set) - fitness(individual1, item_set)
 
-def select_breeders(population_sorted, item_set, size_of_population):
+def sort_population_by_fitness(population, item_set):
+	populationSorted = sorted(population, key=functools.cmp_to_key(compare))
+	return populationSorted
+
+def select_breeders(population_sorted, size_of_population):
 	result = []
 	best_individuals = size_of_population/5
 	lucky_few = size_of_population/5
 	for i in range(best_individuals):
-		result.append(generate_individual_from_string(population_sorted[i][0]))
+		result.append(population_sorted[i])
 	for i in range(lucky_few):
-		result.append(generate_individual_from_string(random.choice(population_sorted)[0]))
+		result.append(random.choice(population_sorted))
 	random.shuffle(result)
 	return result
 
@@ -120,6 +104,7 @@ def create_children(breeders, number_of_child):
 	for i in range(len(breeders) / 2):
 		for j in range(number_of_child):
 			result.append(create_child(breeders[i], breeders[len(breeders) - 1 -i]))
+	#print(len(result))
 	return result
 	
 def evolve_several_generation_with_limited_time(item_set, size_of_population, number_of_child, time_limit):
@@ -127,61 +112,53 @@ def evolve_several_generation_with_limited_time(item_set, size_of_population, nu
 	value0 = 0
 	result = []
 	population = generate_first_population(item_set, size_of_population)
-	value0 = max(value0, value(get_best_individual_in_population(population, item_set),item_set))
+	value0 = max(value0, value(get_best_individual_in_population(population),item_set))
 	result.append(value0)
 	while(time.time()-temps_init < time_limit):
 		population_sorted = sort_population_by_fitness(population, item_set)
-		breeders = select_breeders(population_sorted, item_set, size_of_population)
+		breeders = select_breeders(population_sorted, size_of_population)
 		population = create_children(breeders, number_of_child)
-		value0 = max(value0, value(get_best_individual_in_population(population, item_set),item_set))
-		result.append(value0)
-	return result
+		value0 = max(value0, value(get_best_individual_in_population(population),item_set))
+	return value0
 
 #analysis tools
-def get_best_individual_in_population(population, item_set):
-	return generate_individual_from_string(sort_population_by_fitness(population, item_set)[0][0])
+def get_best_individual_in_population(populationSorted):
+	return populationSorted[0]
 
 #print result:
 def mean_result_evolve(item_set, size_of_population, number_of_child, number_of_sample, mutationRate, time_limit):
 	meanResult = 0
 	for i in range (number_of_sample):
-		temp = evolve_several_generation_with_limited_time(item_set, size_of_population, number_of_child, time_limit)
-		meanResult += temp[len(temp) - 1]
+		meanResult += evolve_several_generation_with_limited_time(item_set, size_of_population, number_of_child, time_limit)
 	return (meanResult/number_of_sample)
 
-def print_graph_size_of_population(Number_of_item, Max_weight, Max_value, number_of_child, number_of_sample, mutationRate, time_limit):
-	item_set = generate_all_items(Number_of_item, Max_weight, Max_value)
-	plt.title("size_of_population")
-	graph = []
+def print_graph_size_of_population(number_of_child, number_of_sample, mutationRate, time_limit, item_set):
+	plt.title("Algorithm effenciency with size_of_population")
+	plt.ylabel('Algorithm result')
+	plt.xlabel('Size of population')
+	graphX = []
+	graphY = []
 	for i in range(19):
 		size_of_population = 5*(i+1)
-		graph.append(mean_result_evolve(item_set, size_of_population, number_of_child, number_of_sample, mutationRate, time_limit))
-	plt.plot(graph)
+		graphX.append(size_of_population)
+		graphY.append(mean_result_evolve(item_set, size_of_population, number_of_child, number_of_sample, mutationRate, time_limit))
+	plt.plot(graphX, graphY)
 	plt.show()
 
 #variables
 #Knapsack_Capacity = item_set_total_weight / 2
-Number_of_item = 10
+Number_of_item = 500
 Max_value = 10
 Max_weight = 10
 
-size_of_population = 5 * 3
+size_of_population = 10
 number_of_child = 5
 mutationRate = 0
-time_limit = 0.01
-number_of_sample = 10
+time_limit = 0.05
+number_of_sample = 50
 
 #main
-print_graph_size_of_population(Number_of_item, Max_weight, Max_value, number_of_child, number_of_sample, mutationRate, time_limit)
-
-def test3():
-	item_set = generate_all_items(Number_of_item, Max_weight, Max_value)
-	mean_result_evolve(item_set, size_of_population, lucky_few, number_of_child, number_of_sample, mutationRate, time_limit)
-
-def test2():
-	item_set = generate_all_items(Number_of_item, Max_weight, Max_value)
-	result = evolve_several_generation_with_limited_time(item_set, size_of_population, best_individuals, lucky_few, number_of_child, time_limit)
-	plt.plot(result)
-	plt.show()
+item_set = generate_all_items(Number_of_item, Max_weight, Max_value)
+print_graph_size_of_population(number_of_child, number_of_sample, mutationRate, time_limit, item_set)
 
 print (time.time() - temps1)
