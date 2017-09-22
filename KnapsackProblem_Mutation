@@ -104,9 +104,20 @@ def create_children(breeders, number_of_child):
 	for i in range(len(breeders) / 2):
 		for j in range(number_of_child):
 			result.append(create_child(breeders[i], breeders[len(breeders) - 1 -i]))
-	#print(len(result))
 	return result
-	
+
+def mutate_one_individual(individual):
+	i = int(len(individual) * random.random())
+	individual[i] = not individual[i]
+	return individual
+
+def mutate_population(population, mutationRate):
+	for i in population:
+		if (100 * random.random() < mutationRate):
+			print("mutation")
+			i = mutate_one_individual(i)
+	return (population)
+
 def evolve_several_generation_with_limited_time(item_set, size_of_population, number_of_child, time_limit):
 	temps_init = time.time()
 	value0 = 0
@@ -147,18 +158,27 @@ def print_graph_size_of_population(number_of_child, number_of_sample, mutationRa
 
 #variables
 #Knapsack_Capacity = item_set_total_weight / 2
-Number_of_item = 500
+Number_of_item = 2
 Max_value = 10
 Max_weight = 10
 
 size_of_population = 10
 number_of_child = 5
 mutationRate = 0
-time_limit = 0.05
-number_of_sample = 50
+time_limit = 0.25
+number_of_sample = 10
 
 #main
-item_set = generate_all_items(Number_of_item, Max_weight, Max_value)
-print_graph_size_of_population(number_of_child, number_of_sample, mutationRate, time_limit, item_set)
+#item_set = generate_all_items(Number_of_item, Max_weight, Max_value)
+#print_graph_size_of_population(number_of_child, number_of_sample, mutationRate, time_limit, item_set)
+
+population = []
+item_set = item_set = generate_all_items(Number_of_item, Max_weight, Max_value)
+for i in range(10):
+	population.append(generate_one_individual(item_set))
+mutationRate = 90
+
+print(mutate_population(population, mutationRate))
+
 
 print (time.time() - temps1)
