@@ -114,11 +114,10 @@ def mutate_one_individual(individual):
 def mutate_population(population, mutationRate):
 	for i in population:
 		if (100 * random.random() < mutationRate):
-			print("mutation")
 			i = mutate_one_individual(i)
 	return (population)
 
-def evolve_several_generation_with_limited_time(item_set, size_of_population, number_of_child, time_limit):
+def evolve_several_generation_with_limited_time(item_set, size_of_population, number_of_child, time_limit, mutationRate):
 	temps_init = time.time()
 	value0 = 0
 	result = []
@@ -129,6 +128,7 @@ def evolve_several_generation_with_limited_time(item_set, size_of_population, nu
 		population_sorted = sort_population_by_fitness(population, item_set)
 		breeders = select_breeders(population_sorted, size_of_population)
 		population = create_children(breeders, number_of_child)
+		population = mutate_population(population, mutationRate)
 		value0 = max(value0, value(get_best_individual_in_population(population),item_set))
 	return value0
 
@@ -140,7 +140,7 @@ def get_best_individual_in_population(populationSorted):
 def mean_result_evolve(item_set, size_of_population, number_of_child, number_of_sample, mutationRate, time_limit):
 	meanResult = 0
 	for i in range (number_of_sample):
-		meanResult += evolve_several_generation_with_limited_time(item_set, size_of_population, number_of_child, time_limit)
+		meanResult += evolve_several_generation_with_limited_time(item_set, size_of_population, number_of_child, time_limit, mutationRate)
 	return (meanResult/number_of_sample)
 
 def print_graph_size_of_population(number_of_child, number_of_sample, mutationRate, time_limit, item_set):
@@ -158,27 +158,18 @@ def print_graph_size_of_population(number_of_child, number_of_sample, mutationRa
 
 #variables
 #Knapsack_Capacity = item_set_total_weight / 2
-Number_of_item = 2
+Number_of_item = 500
 Max_value = 10
 Max_weight = 10
 
 size_of_population = 10
 number_of_child = 5
-mutationRate = 0
+mutationRate = 10
 time_limit = 0.25
 number_of_sample = 10
 
 #main
-#item_set = generate_all_items(Number_of_item, Max_weight, Max_value)
-#print_graph_size_of_population(number_of_child, number_of_sample, mutationRate, time_limit, item_set)
-
-population = []
-item_set = item_set = generate_all_items(Number_of_item, Max_weight, Max_value)
-for i in range(10):
-	population.append(generate_one_individual(item_set))
-mutationRate = 90
-
-print(mutate_population(population, mutationRate))
-
+item_set = generate_all_items(Number_of_item, Max_weight, Max_value)
+print_graph_size_of_population(number_of_child, number_of_sample, mutationRate, time_limit, item_set)
 
 print (time.time() - temps1)
