@@ -143,15 +143,15 @@ def mean_result_evolve(item_set, size_of_population, number_of_child, number_of_
 		meanResult += evolve_several_generation_with_limited_time(item_set, size_of_population, number_of_child, time_limit, mutationRate)
 	return (meanResult/number_of_sample)
 
-def print_graph_size_of_population(number_of_child, number_of_sample, mutationRate, time_limit, item_set):
-	plt.title("Algorithm effenciency with size_of_population")
+def print_graph_size_of_population(number_of_child, number_of_sample, mutationRate, size_of_population, time_limit, item_set):
+	plt.title("Algorithm effenciency with mutation rate")
 	plt.ylabel('Algorithm result')
-	plt.xlabel('Size of population')
+	plt.xlabel('mutation rate')
 	graphX = []
 	graphY = []
-	for i in range(19):
-		size_of_population = 5*(i+1)
-		graphX.append(size_of_population)
+	for i in range(100):
+		mutationRate = i
+		graphX.append(mutationRate)
 		graphY.append(mean_result_evolve(item_set, size_of_population, number_of_child, number_of_sample, mutationRate, time_limit))
 	plt.plot(graphX, graphY)
 	plt.show()
@@ -162,14 +162,14 @@ Number_of_item = 500
 Max_value = 10
 Max_weight = 10
 
-size_of_population = 10
+size_of_population = 40
 number_of_child = 5
 mutationRate = 10
 time_limit = 0.25
-number_of_sample = 10
+number_of_sample = 25
 
 #main
 item_set = generate_all_items(Number_of_item, Max_weight, Max_value)
-print_graph_size_of_population(number_of_child, number_of_sample, mutationRate, time_limit, item_set)
+print_graph_size_of_population(number_of_child, number_of_sample, mutationRate, size_of_population, time_limit, item_set)
 
 print (time.time() - temps1)
