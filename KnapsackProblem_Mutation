@@ -8,6 +8,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 import numpy as np
 import functools
+import matplotlib.cm as cmx
 
 temps1 = time.time()
 
@@ -176,7 +177,7 @@ size_of_population = 10
 number_of_child = 5
 mutationRate = 10
 time_limit = 0.25
-number_of_sample = 1
+number_of_sample = 10
 
 #main
 item_set = generate_all_items(Number_of_item, Max_weight, Max_value)
