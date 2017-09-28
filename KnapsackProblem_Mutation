@@ -4,6 +4,7 @@
 import random
 import operator
 import time
+from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 import numpy as np
 import functools
@@ -144,16 +145,27 @@ def mean_result_evolve(item_set, size_of_population, number_of_child, number_of_
 	return (meanResult/number_of_sample)
 
 def print_graph_size_of_population(number_of_child, number_of_sample, mutationRate, size_of_population, time_limit, item_set):
-	plt.title("Algorithm effenciency with mutation rate")
-	plt.ylabel('Algorithm result')
-	plt.xlabel('mutation rate')
-	graphX = []
-	graphY = []
-	for i in range(100):
-		mutationRate = i
-		graphX.append(mutationRate)
-		graphY.append(mean_result_evolve(item_set, size_of_population, number_of_child, number_of_sample, mutationRate, time_limit))
-	plt.plot(graphX, graphY)
+	fig = plt.figure()
+	ax = fig.add_subplot(111, projection='3d')
+	
+	ax.set_xlabel('Population size')
+	ax.set_ylabel('Mutation rate')
+	ax.set_zlabel('Efficiency')
+
+	graphSize = []
+	graphMutation = []
+	graphResult = []
+	for i in range(20):
+		mutationRate = 5*i
+		for j in range(19):
+			size_of_population = 5*(j+1)
+			graphSize.append(size_of_population)
+			graphMutation.append(mutationRate)
+			graphResult.append(mean_result_evolve(item_set, size_of_population, number_of_child, number_of_sample, mutationRate, time_limit))
+
+	cNorm = matplotlib.colors.Normalize(vmin=min(graphResult), vmax=max(graphResult))
+	scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=cm)
+	ax.scatter(graphSize, graphMutation, graphResult, c=scalarMap.to_rgba(cs))
 	plt.show()
 
 #variables
@@ -162,11 +174,11 @@ Number_of_item = 500
 Max_value = 10
 Max_weight = 10
 
-size_of_population = 40
+size_of_population = 10
 number_of_child = 5
 mutationRate = 10
 time_limit = 0.25
-number_of_sample = 25
+number_of_sample = 1
 
 #main
 item_set = generate_all_items(Number_of_item, Max_weight, Max_value)
