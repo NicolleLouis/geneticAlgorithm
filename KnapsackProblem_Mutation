@@ -163,9 +163,7 @@ def print_graph_size_of_population(number_of_child, number_of_sample, mutationRa
 			graphMutation.append(mutationRate)
 			graphResult.append(mean_result_evolve(item_set, size_of_population, number_of_child, number_of_sample, mutationRate, time_limit))
 
-	cNorm = matplotlib.colors.Normalize(vmin=min(graphResult), vmax=max(graphResult))
-	scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=cm)
-	ax.scatter(graphSize, graphMutation, graphResult, c=scalarMap.to_rgba(cs))
+	ax.scatter(graphSize, graphMutation, graphResult)
 	plt.show()
 
 #variables
