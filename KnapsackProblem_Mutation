@@ -108,15 +108,15 @@ def create_children(breeders, number_of_child):
 			result.append(create_child(breeders[i], breeders[len(breeders) - 1 -i]))
 	return result
 
-def mutate_one_individual(individual):
-	i = int(len(individual) * random.random())
-	individual[i] = not individual[i]
+def mutate_one_individual(individual, mutationRate):
+	for geneIndex in range(len(individual)):
+		if(100 * random.random() < mutationRate):
+			individual[geneIndex] = not individual[geneIndex]
 	return individual
 
 def mutate_population(population, mutationRate):
-	for i in population:
-		if (100 * random.random() < mutationRate):
-			i = mutate_one_individual(i)
+	for individual in population:
+		individual = mutate_one_individual(individual, mutationRate)
 	return (population)
 
 def evolve_several_generation_with_limited_time(item_set, size_of_population, number_of_child, time_limit, mutationRate):
@@ -145,7 +145,7 @@ def mean_result_evolve(item_set, size_of_population, number_of_child, number_of_
 		meanResult += evolve_several_generation_with_limited_time(item_set, size_of_population, number_of_child, time_limit, mutationRate)
 	return (meanResult/number_of_sample)
 
-def print_graph_size_of_population(number_of_child, number_of_sample, mutationRate, size_of_population, time_limit, item_set):
+def print_graph(number_of_child, number_of_sample, mutationRate, size_of_population, time_limit, item_set):
 	fig = plt.figure()
 	ax = fig.add_subplot(111, projection='3d')
 	
@@ -175,12 +175,12 @@ Max_weight = 10
 
 size_of_population = 10
 number_of_child = 5
-mutationRate = 10
+mutationRate = 50
 time_limit = 0.25
 number_of_sample = 10
 
 #main
 item_set = generate_all_items(Number_of_item, Max_weight, Max_value)
-print_graph_size_of_population(number_of_child, number_of_sample, mutationRate, size_of_population, time_limit, item_set)
+print_graph(number_of_child, number_of_sample, mutationRate, size_of_population, time_limit, item_set)
 
 print (time.time() - temps1)
