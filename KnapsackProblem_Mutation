@@ -131,6 +131,7 @@ def evolve_several_generation_with_limited_time(item_set, size_of_population, nu
 		breeders = select_breeders(population_sorted, size_of_population)
 		population = create_children(breeders, number_of_child)
 		population = mutate_population(population, mutationRate)
+		population_mutated_sorted = sort_population_by_fitness(population, item_set)
 		value0 = max(value0, value(get_best_individual_in_population(population),item_set))
 	return value0
 
@@ -176,7 +177,7 @@ Max_weight = 10
 size_of_population = 10
 number_of_child = 5
 mutationRate = 50
-time_limit = 0.25
+time_limit = 0.01
 number_of_sample = 10
 
 #main
