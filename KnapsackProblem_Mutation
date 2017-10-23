@@ -1,4 +1,4 @@
-#!/usr/bin/python3.5
+	#!/usr/bin/python3.5
 # -*-coding:Utf-8 -*
 
 import random
@@ -107,6 +107,10 @@ def create_children(breeders, number_of_child):
 		for j in range(number_of_child):
 			result.append(create_child(breeders[i], breeders[len(breeders) - 1 -i]))
 	return result
+
+def mutate_one_individual_nul(individual):
+ 	i = int(len(individual) * random.random())
+ 	individual[i] = not individual[i]
 
 def mutate_one_individual(individual, mutationRate):
 	for geneIndex in range(len(individual)):
