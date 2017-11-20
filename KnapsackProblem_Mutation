@@ -9,8 +9,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import functools
 import matplotlib.cm as cmx
-import pandas as pd
-import seaborn as sns
 
 temps1 = time.time()
 
@@ -153,18 +151,21 @@ def mean_result_evolve(item_set, size_of_population, number_of_child, number_of_
 	return (meanResult/number_of_sample)
 
 def print_graph(number_of_child, number_of_sample, mutationRate, size_of_population, time_limit, item_set):
-	grid = sns.FacetGrid(df, col="mutation", hue="mutation", col_wrap=5, size=1.5)
+	fig = plt.figure()
+	ax = fig.add_subplot(111, projection='3d')
 	
-	#add panda dataframe: a new serie for each mutation tick
-	#changer la méthode pour créer une série sur la boucle des j.
-	#a la fin de la boucle i, ajouter la series au dataframe total avec comme clef de la series "mutationRate"
-	
-	graph3D = {}
-	for i in range(2): #remettre 20
+	ax.set_xlabel('Population size')
+	ax.set_ylabel('Mutation rate')
+	ax.set_zlabel('Efficiency')
+
+	graphSize = []
+	graphMutation = []
+	graphResult = []
+	for i in range(20):
 		mutationRate = 5*i
 		graphSize = []
 		graphResult = []
-		for j in range(2): #remettre 19
+		for j in range(19):
 			size_of_population = 5*(j+1)
 			graphSize.append(size_of_population)
 			graphResult.append(mean_result_evolve(item_set, size_of_population, number_of_child, number_of_sample, mutationRate, time_limit))
