@@ -161,17 +161,16 @@ def print_graph(number_of_child, number_of_sample, mutationRate, size_of_populat
 	graphSize = []
 	graphMutation = []
 	graphResult = []
-	for i in range(20):
-		mutationRate = 5*i
-		graphSize = []
-		graphResult = []
-		for j in range(19):
-			size_of_population = 5*(j+1)
+	for i in range(10):
+		mutationRate = 10*i
+		for j in range(9):
+			size_of_population = 10*(j+1)
 			graphSize.append(size_of_population)
+			graphMutation.append(mutationRate)
 			graphResult.append(mean_result_evolve(item_set, size_of_population, number_of_child, number_of_sample, mutationRate, time_limit))
-		graph3D.i = pd.Series(graphResult, graphSize)
-	print(graph3D)
-	
+
+	ax.scatter(graphSize, graphMutation, graphResult)
+	plt.show()
 
 #variables
 #Knapsack_Capacity = item_set_total_weight / 2
