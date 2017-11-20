@@ -110,10 +110,6 @@ def create_children(breeders, number_of_child):
 			result.append(create_child(breeders[i], breeders[len(breeders) - 1 -i]))
 	return result
 
-def mutate_one_individual_nul(individual):
- 	i = int(len(individual) * random.random())
- 	individual[i] = not individual[i]
-
 def mutate_one_individual(individual, mutationRate):
 	for geneIndex in range(len(individual)):
 		if(100 * random.random() < mutationRate):
