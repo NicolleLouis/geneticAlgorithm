@@ -108,9 +108,9 @@ def create_children(breeders, number_of_child):
 			result.append(create_child(breeders[i], breeders[len(breeders) - 1 -i]))
 	return result
 
-def mutate_one_individual_nul(individual):
- 	i = int(len(individual) * random.random())
- 	individual[i] = not individual[i]
+def mutate_one_individual(individual):
+	i = int(len(individual) * random.random())
+	individual[i] = not individual[i]
 
 def mutate_one_individual(individual, mutationRate):
 	for geneIndex in range(len(individual)):
@@ -151,26 +151,19 @@ def mean_result_evolve(item_set, size_of_population, number_of_child, number_of_
 	return (meanResult/number_of_sample)
 
 def print_graph(number_of_child, number_of_sample, time_limit, item_set):
-	fig = plt.figure()
-	ax = fig.add_subplot(111, projection='3d')
-	
-	ax.set_xlabel('Population size')
-	ax.set_ylabel('Mutation rate')
-	ax.set_zlabel('Efficiency')
-
-	graphSize = []
-	graphMutation = []
-	graphResult = []
-	for i in range(20):
-		mutationRate = 5*i
-		for j in range(19):
-			size_of_population = 5*(j+1)
-			graphSize.append(size_of_population)
-			graphMutation.append(mutationRate)
-			graphResult.append(mean_result_evolve(item_set, size_of_population, number_of_child, number_of_sample, mutationRate, time_limit))
-
-	ax.scatter(graphSize, graphMutation, graphResult)
-	plt.show()
+	plt.title("Algorithm effenciency with population size")
+  	plt.ylabel('Algorithm result')
+	plt.xlabel('Population size')
+  	graphX = []
+  	graphY = []
+	for i in range(19):
+		size_of_population = 5*(i+1)
+		print(size_of_population)
+		mutationRate = 0
+		graphX.append(size_of_population)
+  		graphY.append(mean_result_evolve(item_set, size_of_population, number_of_child, number_of_sample, mutationRate, time_limit))
+  	plt.plot(graphX, graphY)
+  	plt.show()
 
 #variables
 #Knapsack_Capacity = item_set_total_weight / 2
@@ -178,10 +171,9 @@ Number_of_item = 500
 Max_value = 10
 Max_weight = 10
 
-size_of_population = 10
 number_of_child = 5
-time_limit = 0.05
-number_of_sample = 25
+time_limit = 0.25
+number_of_sample = 10
 
 #main
 item_set = generate_all_items(Number_of_item, Max_weight, Max_value)
